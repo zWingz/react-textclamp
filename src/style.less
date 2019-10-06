@@ -1,0 +1,81 @@
+
+ .ellipsis-container {
+  position: relative;
+  overflow: hidden;
+  // line-height: 18px; /* h */
+  // max-height: 108px; /* h*n */
+  // -webkit-line-clamp: 6; /* n */
+  // font-size: 50px; /* w */
+  &.single-clamp {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
+  &.multi-clamp {
+      word-break: break-all;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      hyphens: auto;
+  }
+  &.with-expand {
+      line-height: 0px;
+      color: transparent;
+  }
+}
+.ellipsis-content {
+  color: #000;
+  vertical-align: top;
+  // font-size: 12px; /* f */
+  * {
+      position: relative; // 修复由于font-size过大导致a标签无法点击问题
+      vertical-align: top !important;
+  }
+}
+
+.ellipsis-content-mirror {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  // 用来修复用户selection的bug
+  user-select: initial !important;
+  * {
+      // mirror节点将文字设为透明
+      color: transparent !important;
+      background: transparent !important;
+  }
+}
+
+.ellipsis-ghost {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  color: #000;
+  pointer-events: none;
+}
+.ellipsis-ghost:before {
+  content: '';
+  display: block;
+  float: right;
+  width: 50%;
+  height: 100%;
+}
+.ellipsis-placeholder {
+  float: right;
+  width: 50%;
+  // height: 108px; /* h*n */
+}
+.ellipsis-trigger {
+  position: relative;
+  float: right;
+  white-space: nowrap;
+  background: transparent;
+  pointer-events: initial;
+  // font-size: 12px; /* f */
+  // width: 50px; /* w */
+  // height: 18px; /* h */
+  // margin-top: -18px; /* -h */
+}

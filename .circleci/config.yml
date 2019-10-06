@@ -1,0 +1,104 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+
+refs:
+  container: &container
+    docker:
+      - image: node:latest
+    working_directory: ~/repo
+  steps:
+    - &Install
+      run:
+        name: Install Dependencies
+        command: yarn install
+    - &Build_docz
+      run:
+        name: Build doc
+        command: |
+          yarn docz:build
+          mv website/* ./
+    - &Test
+      run:
+        name: Test
+        command: yarn test
+    - &Codecov
+      run:
+        name: Codecov
+        command: |
+          yarn global add codecov
+          codecov
+    - &SetupGithub
+      run:
+        name: Setup Github
+        command: |
+          git config user.name "zwingz"
+          git config user.email "zhengzwing@gmail.com"
+    - &Push-gh-pages
+      run:
+        name: Push gh-pages
+        command: |
+          git add .
+          git add -u
+          git commit -m "Updated by circleci - `date`"
+          git push --force origin gh-pages
+
+
+jobs:
+  master:
+    <<: *container
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - *Install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - *Test
+      - *Codecov
+      - run: git checkout .
+      - run: git checkout gh-pages #
+      - run: git reset --hard origin/master # 同上
+      - *Build_docz
+      - *SetupGithub
+      - *Push-gh-pages
+
+  dev:
+    <<: *container
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - *Install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - *Test
+
+workflows:
+  version: 2
+  dev:
+    jobs:
+      - dev:
+          filters:
+            branches:
+              ignore:
+                - master
+                - gh-pages
+  master:
+    jobs:
+      - master:
+          filters:
+            branches:
+              only: master

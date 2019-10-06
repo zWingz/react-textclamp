@@ -13,7 +13,7 @@ export default {
   hashRouter: true,
   plugins: [
     css({
-      preprocessor: 'sass'
+      preprocessor: 'less'
     })
   ],
   codeSandbox: false

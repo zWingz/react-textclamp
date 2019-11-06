@@ -2,11 +2,15 @@ import * as React from 'react'
 import { addResizeEventListener } from './utils'
 import './style.less'
 
-const callback = (window as any).requestIdleCallback || window.requestAnimationFrame
+const callback =
+  (window as any).requestIdleCallback || window.requestAnimationFrame
 
-type ContentScope = Pick<State, 'expanded' | 'isClamped'> & Pick<TextClamp, 'toggle'>
+type ContentScope = Pick<State, 'expanded' | 'isClamped'> &
+  Pick<TextClamp, 'toggle'>
 
 interface Prop {
+  style?: React.CSSProperties
+  className?: string
   tag?: string
   lineHeight?: number
   showExpand?: boolean
@@ -58,16 +62,17 @@ export class TextClamp extends React.Component<Prop, State> {
     return isClamped && !expanded
   }
   get containerStyles(): React.CSSProperties {
-    const { showExpand, maxLine } = this.props
+    const { showExpand, maxLine, style } = this.props
     const { expanded, triggerWidth } = this.state
     const ret = {
       WebkitLineClamp: expanded ? undefined : maxLine,
-      maxHeight: this.styles.maxHeight
+      maxHeight: this.styles.maxHeight,
+      ...style
     }
     if (!showExpand) return ret
     return {
       ...ret,
-      fontSize: expanded ? '0px' : triggerWidth * 1.5 + 'px',
+      fontSize: expanded ? '0px' : triggerWidth * 1.2 + 'px',
       color: expanded ? 'inherit' : 'transparent'
     }
   }
@@ -141,7 +146,7 @@ export class TextClamp extends React.Component<Prop, State> {
       triggerWidth: current ? current.offsetWidth : 0
     })
   }
-  toggle = (e) => {
+  toggle = e => {
     e.preventDefault()
     e.stopPropagation()
     this.setState({
@@ -164,21 +169,31 @@ export class TextClamp extends React.Component<Prop, State> {
       toggle
     }
     const { renderTrigger } = this.props
-    if(renderTrigger) {
+    if (renderTrigger) {
       return renderTrigger(scope)
     }
-    return (!expanded ? '[...more]' : '[hide]')
+    return !expanded ? '[...more]' : '[hide]'
   }
   render() {
     const { toggle, isSingleLine: isSingle } = this
-    const { triggerClass, contentClass, tag, showExpand, children } = this.props
+    const {
+      triggerClass,
+      contentClass,
+      tag,
+      showExpand,
+      children,
+      className: propClassName = ''
+    } = this.props
     const Tag = tag as any
     const { isClamped, expanded } = this.state
     if (!showExpand) {
       const className = [
         'ellipsis-container',
-        isSingle ? 'single-clamp' : 'multi-clamp'
-      ].join(' ')
+        isSingle ? 'single-clamp' : 'multi-clamp',
+        propClassName
+      ]
+        .filter(Boolean)
+        .join(' ')
       return (
         <div ref={this.$el} className={className} style={this.containerStyles}>
           {children}
@@ -197,14 +212,15 @@ export class TextClamp extends React.Component<Prop, State> {
     ) : null
     const Expand = isClamped ? (
       expanded ? (
-        <span
-          {...triggerProps}
-          style={this.triggerMirrorStyles}>
+        <span {...triggerProps} style={this.triggerMirrorStyles}>
           {Trigger}
         </span>
       ) : (
         <div className='ellipsis-ghost' style={this.ghostStyles}>
-          <div className='ellipsis-placeholder' style={this.placeholderStyles} />
+          <div
+            className='ellipsis-placeholder'
+            style={this.placeholderStyles}
+          />
           <span
             ref={this.$trigger}
             {...triggerProps}
@@ -217,7 +233,7 @@ export class TextClamp extends React.Component<Prop, State> {
     return (
       <Tag
         ref={this.$el}
-        className='ellipsis-container with-expand multi-clamp'
+        className={`ellipsis-container with-expand multi-clamp ${propClassName}`}
         style={this.containerStyles}>
         <span
           ref={this.$content}

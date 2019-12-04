@@ -5,6 +5,4 @@ export default {
   TextClamp
 }
 
-export {
-  TextClamp
-}
+export { TextClamp }

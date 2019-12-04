@@ -4,31 +4,29 @@
   "description": "react text clamp component",
   "main": "dist/index.js",
   "module": "es/index.js",
-  "types": "./index.d.ts",
   "keywords": [],
   "files": [
     "dist",
     "es",
-    "src",
-    "index.d.ts"
+    "src"
   ],
   "scripts": {
     "build": "rollup -c",
     "tslint": "tslint --fix --format codeFrame --project .",
     "dev": "poi --serve",
-    "pub": "yarn tslint && yarn build && yarn publish --access=public",
+    "pub": "yarn tslint && yarn demo && yarn build && yarn publish",
     "test": "jest",
     "demo": "poi --prod"
   },
   "repository": {
-    "url": "zwingz/react-clamp",
+    "url": "https://github.com/zWingz/react-textclamp",
     "type": "git"
   },
   "author": "zwingz",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://zwing.site/react-textclamp",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/zWingz/react-textclamp/issues"
   },
   "peerDependencies": {
     "react": ">=16.0.0",
@@ -57,7 +55,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-typescript": "^1.0.0",
+    "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^24.1.0",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.15.0",
@@ -91,7 +89,6 @@
       "enzyme-to-json/serializer"
     ]
   },
-  "dependencies": {},
   "husky": {
     "hooks": {
       "pre-commit": "node node_modules/husky-tslint-pre-commit/pre-commit.js"

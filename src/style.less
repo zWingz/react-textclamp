@@ -1,52 +1,45 @@
-
- .ellipsis-container {
+.text-clamp {
   position: relative;
   overflow: hidden;
-  // line-height: 18px; /* h */
-  // max-height: 108px; /* h*n */
-  // -webkit-line-clamp: 6; /* n */
-  // font-size: 50px; /* w */
   &.single-clamp {
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    text-overflow: clamp;
+    white-space: nowrap;
   }
   &.multi-clamp {
-      word-break: break-all;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      hyphens: auto;
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    hyphens: auto;
   }
-  &.with-expand {
-      line-height: 0px;
-      color: transparent;
+  &.with-trigger {
+    line-height: 0px;
+    color: transparent;
   }
 }
-.ellipsis-content {
+.clamp-content {
   color: #000;
   vertical-align: top;
-  // font-size: 12px; /* f */
   * {
-      position: relative; // 修复由于font-size过大导致a标签无法点击问题
-      vertical-align: top !important;
+    position: relative; // fix <a/> cannot click
+    vertical-align: top !important;
   }
 }
 
-.ellipsis-content-mirror {
+.clamp-content-mirror {
   position: absolute;
   top: 0px;
   left: 0px;
   bottom: 0px;
   right: 0px;
-  // 用来修复用户selection的bug
+  // fix selection
   user-select: initial !important;
   * {
-      // mirror节点将文字设为透明
-      color: transparent !important;
-      background: transparent !important;
+    color: transparent !important;
+    background: transparent !important;
   }
 }
 
-.ellipsis-ghost {
+.clamp-ghost {
   position: absolute;
   z-index: 1;
   top: 0;
@@ -55,28 +48,22 @@
   height: 100%;
   color: #000;
   pointer-events: none;
+  &::before {
+    content: "";
+    // display: block;
+    float: right;
+    width: 50%;
+    height: 100%;
+  }
 }
-.ellipsis-ghost:before {
-  content: '';
-  display: block;
+.clamp-placeholder {
   float: right;
   width: 50%;
-  height: 100%;
 }
-.ellipsis-placeholder {
-  float: right;
-  width: 50%;
-  // height: 108px; /* h*n */
-}
-.ellipsis-trigger {
-  position: relative;
+.clamp-trigger {
+  // position: relative;
   float: right;
   white-space: nowrap;
-  background: transparent;
   pointer-events: initial;
   cursor: pointer;
-  // font-size: 12px; /* f */
-  // width: 50px; /* w */
-  // height: 18px; /* h */
-  // margin-top: -18px; /* -h */
 }

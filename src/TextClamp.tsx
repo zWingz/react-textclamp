@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { addResizeEventListener } from './utils'
-import './style.less'
 
-const callback =
+const optimizeCallback =
   (window as any).requestIdleCallback || window.requestAnimationFrame
 
 type ContentScope = Pick<State, 'expanded' | 'isClamped'> &
@@ -21,6 +20,8 @@ interface Prop {
   contentClass?: string
   triggerClass?: string
   renderTrigger?: (prop: ContentScope) => React.ReactNode | React.ReactNode
+  triggerWidth?: number,
+  triggerWidthPercent?: number
 }
 
 interface State {
@@ -62,7 +63,7 @@ export class TextClamp extends React.Component<Prop, State> {
     return isClamped && !expanded
   }
   get containerStyles(): React.CSSProperties {
-    const { showExpand, maxLine, style } = this.props
+    const { showExpand, maxLine, style, triggerWidthPercent = 1.2, triggerWidth: triggerWidthProp } = this.props
     const { expanded, triggerWidth } = this.state
     const ret = {
       WebkitLineClamp: expanded ? undefined : maxLine,
@@ -70,9 +71,10 @@ export class TextClamp extends React.Component<Prop, State> {
       ...style
     }
     if (!showExpand) return ret
+    const width = triggerWidthProp || (triggerWidth * triggerWidthPercent)
     return {
       ...ret,
-      fontSize: expanded ? '0px' : triggerWidth * 1.2 + 'px',
+      fontSize: expanded ? '0px' : width+ 'px',
       color: expanded ? 'inherit' : 'transparent'
     }
   }
@@ -129,7 +131,7 @@ export class TextClamp extends React.Component<Prop, State> {
     const len = this.getLen()
     this.setClamped(len > maxLine)
   }
-  async calc() {
+  calc() {
     const { lineHeight, maxLine } = this.props
     let height
     if (this.getLen() > maxLine) {
@@ -140,10 +142,11 @@ export class TextClamp extends React.Component<Prop, State> {
     this.setState({
       ghostHeight: height
     })
-    await Promise.resolve()
-    const { current } = this.$trigger
-    this.setState({
-      triggerWidth: current ? current.offsetWidth : 0
+    Promise.resolve().then(() => {
+      const { current } = this.$trigger
+      this.setState({
+        triggerWidth: current ? current.offsetWidth : 0
+      })
     })
   }
   toggle = e => {
@@ -155,7 +158,7 @@ export class TextClamp extends React.Component<Prop, State> {
   }
   componentDidMount() {
     if (!this.props.showExpand) return
-    callback(() => {
+    optimizeCallback(() => {
       this.update()
       addResizeEventListener(this.$el.current, this.update.bind(this))
     })
@@ -188,7 +191,7 @@ export class TextClamp extends React.Component<Prop, State> {
     const { isClamped, expanded } = this.state
     if (!showExpand) {
       const className = [
-        'ellipsis-container',
+        'text-clamp',
         isSingle ? 'single-clamp' : 'multi-clamp',
         propClassName
       ]
@@ -202,11 +205,11 @@ export class TextClamp extends React.Component<Prop, State> {
     }
     const Trigger = this.renderTrigger()
     const triggerProps = {
-      className: `ellipsis-trigger ${triggerClass || ''}`,
+      className: `clamp-trigger ${triggerClass || ''}`,
       onClick: toggle
     }
     const ContentMirror = this.isShowContentMirror ? (
-      <span className='ellipsis-content-mirror' style={this.contentStyles}>
+      <span className='clamp-content-mirror' style={this.contentStyles}>
         {children}
       </span>
     ) : null
@@ -216,9 +219,9 @@ export class TextClamp extends React.Component<Prop, State> {
           {Trigger}
         </span>
       ) : (
-        <div className='ellipsis-ghost' style={this.ghostStyles}>
+        <div className='clamp-ghost' style={this.ghostStyles}>
           <div
-            className='ellipsis-placeholder'
+            className='clamp-placeholder'
             style={this.placeholderStyles}
           />
           <span
@@ -233,11 +236,11 @@ export class TextClamp extends React.Component<Prop, State> {
     return (
       <Tag
         ref={this.$el}
-        className={`ellipsis-container with-expand multi-clamp ${propClassName}`}
+        className={`text-clamp with-trigger multi-clamp ${propClassName}`}
         style={this.containerStyles}>
         <span
           ref={this.$content}
-          className={`ellipsis-content ${contentClass || ''}`}
+          className={`clamp-content ${contentClass || ''}`}
           style={this.contentStyles}>
           {children}
         </span>

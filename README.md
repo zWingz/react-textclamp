@@ -2,8 +2,14 @@
 
 > react text clamp component
 
-
 ## Usage
+
+`yarn add react-clamp`
+
+```js
+import "react-clamp/index.css";
+import { TextClamp } from "react-clamp";
+```
 
 ### develop
 
@@ -19,10 +25,7 @@
 
 ### doc
 
-`yarn docz`
-or
-`yarn docz:build`
-
+`yarn demo`
 
 ## License
 
